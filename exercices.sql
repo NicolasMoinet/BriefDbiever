@@ -11,7 +11,9 @@ select h.nom  from habitant h where nom like'A%r%';
 --6. Numéros des habitants ayant bu les potions numéros 1, 3 ou 4. (8 lignes)
 select distinct a.num_hab from absorber a  where a.num_potion =1 or  a.num_potion =3 or a.num_potion =4; 
 --7. Liste des trophées : numéro, date de prise, nom de la catégorie et nom du preneur. (10lignes)
-select t.num_trophee,t.date_prise ,t.code_cat ,t.num_preneur  from trophee t ;
+select t.num_trophee,t.date_prise ,t.num_preneur,c.nom_categ , h.nom from trophee t 
+join categorie c on t.code_cat =c.code_cat 
+join habitant h on h.num_hab =t.num_preneur ;
 --8. Nom des habitants qui habitent à Aquilona. (7 lignes)
 select h.nom  from habitant h join village v on h.num_village = v.num_village 
 where v.nom_village = 'Aquilona';
@@ -61,8 +63,8 @@ order by r.superficie desc  ;
 --***
 
 --18. Nombre d'habitants du village numéro 5. (4)
-select h.num_hab from habitant h
-join village v on h.num_village = v.num_village where v.num_village ='5';
+select count(h.num_hab) from habitant h
+where h.num_village =5;
 --19. Nombre de points gagnés par Goudurix. (5)
 select sum(c.nb_points) from categorie c 
 join trophee t on c.code_cat =t.code_cat 
@@ -98,10 +100,9 @@ join habitant h on v.num_village = h.num_village
 group by p.nom_province ;
 
 --26. Nombre de potions différentes absorbées par chaque habitant (nom et nombre). (9lignes)
-select count(p.num_potion),h.nom from potion p 
-join absorber a on p.num_potion =a.num_potion 
-join habitant h on a.num_hab =h.num_hab 
-group by h.nom  ;
+select h.nom, count(distinct a.num_potion)from habitant h 
+join absorber a on a.num_hab =h.num_hab
+group by h.nom;
 
 --27. Nom des habitants ayant bu plus de 2 louches de potion zen. (1 ligne)
 select h.nom from habitant h 
